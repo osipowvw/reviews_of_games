@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Вход</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Главная</a></li>
+                <li><a href="games.html">Игры</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+                <!-- Кнопки входа и регистрации -->
+                <li><a href="login.html">Вход</a></li>
+                <li><a href="register.html">Регистрация</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <!-- Форма входа -->
+            <form id="login-form" action="login.php" method="POST">
+                <label for="username">Имя пользователя:</label><br>
+                <input type="text" id="username" name="username" required><br>
+                <label for="password">Пароль:</label><br>
+                <input type="password" id="password" name="password" required><br><br>
+                <button type="submit">Войти</button>
+            </form>
+            <!-- Элемент для отображения сообщений об ошибке -->
+            <div id="error-message" style="color: red;"></div>
+        </section>
+    </main>    
+    <footer>
+        <p>&copy; 2024 Рецензии на видеоигры</p>
+    </footer>
+    <script>
+        document.getElementById("login-form").addEventListener("submit", function(event) {
+    event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+    var formData = new FormData(this);
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText === "success") {
+                // Перенаправляем на главную страницу при успешном входе
+                window.location.href = "home.html";
+            } else {
+                // Отображаем сообщение об ошибке на странице
+                document.getElementById("error-message").innerText = this.responseText;
+            }
+        }
+    };
+    xhttp.open("POST", "login.php", true);
+    xhttp.send(formData);
+});
+
+    </script>
+</body>
+</html>

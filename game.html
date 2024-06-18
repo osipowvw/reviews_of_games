@@ -1,0 +1,283 @@
+<?php
+session_start();
+
+$host = "localhost";
+$user = "root";
+$password = "deputat1703";
+$database = "kurs";
+
+$connection = mysqli_connect($host, $user, $password, $database);
+
+if (!$connection) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
+
+if ($username) {
+    $query = "SELECT role FROM users WHERE username = '$username'";
+    $result = mysqli_query($connection, $query);
+
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $role = isset($row['role']) ? $row['role'] : null;
+        $_SESSION['role'] = $role;
+    } else {
+        echo "Ошибка при выполнении запроса: " . mysqli_error($connection);
+    }
+}
+
+mysqli_close($connection);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация об игре</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Информация об игре</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Главная</a></li>
+                <li><a href="games.html">Игры</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+                <?php
+                if(isset($_SESSION['username'])):
+                    if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'):
+                ?>
+                    <li><a href="add_game.html">Добавить игру</a></li>
+                <?php
+                    endif;
+                ?>
+                    <li><a href="profile.html">Личный кабинет</a></li>
+                    <li><a href="logout.php">Выход</a></li>
+                <?php
+                else:
+                ?>
+                    <li><a href="login.html">Вход</a></li>
+                    <li><a href="register.html">Регистрация</a></li>
+                <?php
+                endif;
+                ?>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="game-details">
+            <div class="game-info">
+                <h2 id="game-title">Заголовок игры</h2>
+                <p><strong>Жанр:</strong> <span id="genre">Жанр игры</span></p>
+                <p><strong>Разработчик:</strong> <span id="developer">Разработчик игры</span></p>
+                <p><strong>Платформы:</strong> <span id="platforms">Платформы игры</span></p>
+                <p><strong>Дата выпуска:</strong> <span id="release-date">Дата выпуска игры</span></p>
+                <p><strong>Средняя оценка:</strong> 
+                    <span id="average-rating" class="average-rating">
+                        <span id="rating-background" class="rating-background">
+                            <span id="rating-value" class="rating-value">Оценка игры</span>
+                        </span>
+                    </span>
+                </p>
+            </div>
+            <div class="game-image">
+                <img id="game-image" src="" alt="Изображение игры">
+            </div>
+        </section>
+        
+        <?php if(isset($_SESSION['username'])): ?>
+        <section class="review-form">
+            <h3>Оставить отзыв</h3>
+            <form id="review-form">
+                <input type="hidden" id="game-id" name="game_id" value="<?php echo $_GET['game_id']; ?>">
+                <label class="rating">Оценка:</label>
+                <div class="rating-options">
+                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                        <input type="radio" id="rating<?php echo $i; ?>" name="rating" value="<?php echo $i; ?>" required>
+                        <label class="circle" for="rating<?php echo $i; ?>"> <?php echo $i; ?></label>
+                    <?php endfor; ?>
+                </div>
+                <br>
+                <label for="comment">Отзыв:</label>
+                <textarea id="comment" name="comment" rows="4" required></textarea>
+                <br>
+                <button type="submit">Отправить отзыв</button>
+            </form>
+        </section>
+        <?php else: ?>
+        <section class="login-or-register">
+            <p>Чтобы оставить отзыв, пожалуйста, <a href="login.html">войдите</a> или <a href="register.html">зарегистрируйтесь</a>.</p>
+        </section>
+        <?php endif; ?>
+
+        <section class="game-reviews">
+            <h3>Отзывы об игре</h3>
+            <ul id="reviews-list" class="reviews-list">
+                <!-- Список отзывов будет отображен здесь -->
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Рецензии на видеоигры</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const gameId = urlParams.get('game_id');
+    
+            if (gameId) {
+                fetchGameInfo(gameId);
+                loadReviews(gameId);
+            } else {
+                console.error("Game ID not found in the URL");
+            }
+    
+            // Attach event listener to the review form
+            document.getElementById('review-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                submitReview(gameId);
+            });
+        });
+    
+        function fetchGameInfo(gameId) {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        try {
+                            const gameInfo = JSON.parse(this.responseText);
+                            displayGameInfo(gameInfo);
+                        } catch (error) {
+                            console.error("Error parsing game info response: ", error);
+                        }
+                    } else {
+                        console.error("Failed to fetch game info: ", this.status, this.statusText);
+                    }
+                }
+            };
+            xhttp.open("GET", `get_game_info.php?game_id=${gameId}`, true);
+            xhttp.send();
+        }
+    
+        function displayGameInfo(gameInfo) {
+            document.getElementById("game-title").textContent = gameInfo.title;
+            document.getElementById("genre").textContent = gameInfo.genre;
+            document.getElementById("developer").textContent = gameInfo.developer;
+            document.getElementById("platforms").textContent = gameInfo.platforms;
+            document.getElementById("release-date").textContent = gameInfo.release_date;
+            
+            const averageRatingElement = document.getElementById("average-rating");
+            averageRatingElement.textContent = gameInfo.average_rating;
+            
+            averageRatingElement.classList.remove("high-rating", "medium-rating", "low-rating");
+            if (parseFloat(gameInfo.average_rating) > 7) {
+                averageRatingElement.classList.add("high-rating");
+            } else if (parseFloat(gameInfo.average_rating) >= 4 && parseFloat(gameInfo.average_rating) <= 7) {
+                averageRatingElement.classList.add("medium-rating");
+            } else {
+                averageRatingElement.classList.add("low-rating");
+            }
+            
+            document.getElementById("game-image").src = `http://localhost/kurs/${gameInfo.image_url}`;
+        }
+    
+        function loadReviews(gameId) {
+            const reviewsXhttp = new XMLHttpRequest();
+            reviewsXhttp.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        try {
+                            const reviews = JSON.parse(this.responseText);
+                            displayReviews(reviews, gameId);
+                        } catch (error) {
+                            console.error("Error parsing reviews response: ", error);
+                        }
+                    } else {
+                        console.error("Failed to fetch reviews: ", this.status, this.statusText);
+                    }
+                }
+            };
+            reviewsXhttp.open("GET", `get_reviews.php?game_id=${gameId}`, true);
+            reviewsXhttp.send();
+        }
+    
+        function displayReviews(reviews, gameId) {
+            const reviewsList = document.getElementById("reviews-list");
+            reviewsList.innerHTML = "";
+    
+            reviews.forEach(review => {
+                const reviewItem = document.createElement("li");
+                reviewItem.classList.add("review-item");
+                reviewItem.innerHTML = `
+                    <div class="review-header">
+                        <span class="review-username">${review.username}</span>
+                        <span class="review-rating">${review.rating}/10</span>
+                    </div>
+                    <p class="review-comment">${review.comment}</p>
+                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
+                    <button class="delete-review-btn" onclick="deleteReview(${review.review_id}, ${gameId})">Удалить</button>
+                    <?php endif; ?>
+                `;
+                reviewsList.appendChild(reviewItem);
+            });
+        }
+    
+        function deleteReview(reviewId, gameId) {
+            const deleteXhttp = new XMLHttpRequest();
+            deleteXhttp.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        loadReviews(gameId);
+                        location.reload();
+                    } else {
+                        console.error("Failed to delete review: ", this.status, this.statusText);
+                    }
+                }
+            };
+            deleteXhttp.open("POST", "delete_review.php", true);
+            deleteXhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            deleteXhttp.send(`review_id=${reviewId}`);
+        }
+    
+        function submitReview(gameId) {
+            const formData = new FormData(document.getElementById('review-form'));
+            const reviewData = {
+                game_id: gameId,
+                rating: formData.get('rating'),
+                comment: formData.get('comment')
+            };
+            
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        try {
+                            const response = JSON.parse(this.responseText);
+                            if (response.success) {
+                                location.reload(); // Обновляем страницу после успешной отправки отзыва
+                            } else {
+                                console.error("Error saving review: ", response.message);
+                                alert("Error saving review: " + response.message);
+                            }
+                        } catch (error) {
+                            console.error("Error parsing save review response: ", error);
+                        }
+                    } else {
+                        console.error("Failed to save review: ", this.status, this.statusText);
+                    }
+                }
+            };
+            xhttp.open("POST", "save_review.php", true);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send(JSON.stringify(reviewData));
+        }
+    </script>
+            
+</body>
+</html>

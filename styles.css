@@ -1,0 +1,275 @@
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 15px 0;
+}
+
+header h1 {
+    margin: 0;
+    padding: 0 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+
+.game-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Стили для контейнера игр */
+.game-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: 1000px;
+}
+
+.game-item {
+    width: calc(25% - 20px);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.game-item img {
+    width: 100%;
+    height: 290px;
+    border-radius: 8px;
+}
+
+.game-item a {
+    color: #333;
+    text-decoration: none;
+}
+
+.game-item a:hover {
+    color: #007bff;
+}
+
+/* Дополнительные стили для изображения на странице игры */
+
+.game-image img {
+    width: 100%; /* Заполнить всю доступную ширину контейнера */
+    height: auto; /* Автоматический расчет высоты для сохранения пропорций */
+}
+
+.game-details {
+    display: flex; /* Располагаем дочерние элементы внутри flex-контейнера */
+    justify-content: center; /* Выравниваем дочерние элементы по центру по горизонтали */
+    align-items: center; /* Выравниваем дочерние элементы по центру по вертикали */
+}
+
+.game-info {
+    flex: 1; /* Равномерно распределяем пространство между дочерними элементами */
+    padding-right: 20px; /* Добавляем отступ справа для разделения между изображением и текстом */
+    text-align: center; /* Выравниваем текст по центру */
+}
+
+.game-image {
+    width: 200px; /* Фиксированная ширина изображения */
+    height: 300px; /* Фиксированная высота изображения */
+    margin-right: 300px; /* Отрицательный отступ справа для смещения изображения влево */
+}
+
+/* Стили для отзывов */
+.review {
+    margin-bottom: 20px;
+    padding: 20px; /* Увеличим отступы вокруг отзыва */
+    background-color: #f9f9f9; /* Цвет фона */
+    border-radius: 8px; /* Скругление углов */
+    position: relative; /* Позиционирование для псевдоэлементов */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Добавим небольшую тень */
+}
+
+.review::before,
+.review::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #f0f0f0; /* Цвет фона */
+}
+
+.review::before {
+    top: -8px;
+    left: -8px;
+    border-top-left-radius: 8px;
+    border-width: 2px;
+}
+
+.review::after {
+    bottom: -8px;
+    right: -8px;
+    border-bottom-right-radius: 8px;
+    border-width: 2px;
+}
+
+.average-rating {
+    display: inline-block; /* Добавляем свойство для корректного отображения */
+}
+
+.rating-background {
+    display: inline-block;
+    padding: 8px 8px; /* Увеличиваем отступы для увеличения размера фона */
+    border-radius: 8px; /* Увеличиваем радиус закругления углов */
+}
+
+.high-rating {
+    padding: 8px 8px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 125%;
+    font-weight: 1000;
+    border-radius: 38%;
+    background-color: rgb(107, 214, 71); /* Зеленый фон для оценок выше 7 */
+}
+
+.medium-rating {
+    padding: 8px 8px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 125%;
+    font-weight: 1000;
+    border-radius: 38%;
+    background-color: yellow; /* Желтый фон для оценок от 4 до 7 */
+}
+
+.low-rating {
+    padding: 8px 8px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 125%;
+    font-weight: 1000;
+    border-radius: 38%;
+    background-color: coral; /* Красный фон для оценок ниже 4 */
+}
+
+/* Стили для кружочков оценки */
+.rating-options {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.rating-options input[type="radio"] {
+    display: none; /* Скрыть стандартные радиокнопки */
+}
+
+.rating-options label.circle {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-right: 10px;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+.rating-options label.circle
+{
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-right: 10px;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+.rating-options label.circle:hover {
+    background-color: #f0f0f0;
+}
+
+.rating-options input[type="radio"]:checked + label.circle {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Стили для формы отзыва */
+.review-form {
+    margin-top: 20px;
+}
+
+.review-form h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.review-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.review-form input[type="number"],
+.review-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.review-form textarea {
+    resize: vertical; /* Разрешить изменение размера вертикально */
+}
+
+.review-form button[type="submit"] {
+    background-color: #4CAF50; /* Зеленый цвет кнопки */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.review-form button[type="submit"]:hover {
+    background-color: #45a049; /* Темнозеленый при наведении */
+}

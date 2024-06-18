@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Регистрация</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Главная</a></li>
+                <li><a href="games.html">Игры</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+                <!-- Кнопки входа и регистрации -->
+                <li><a href="login.html">Вход</a></li>
+                <li><a href="register.html">Регистрация</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <!-- Форма регистрации -->
+            <form action="register.php" method="POST">
+                <label for="username">Имя пользователя:</label><br>
+                <input type="text" id="username" name="username" required><br>
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email" required><br>
+                <label for="password">Пароль:</label><br>
+                <input type="password" id="password" name="password" required><br><br>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+            <!-- Элемент для отображения сообщений об ошибке -->
+            <div id="error-message" style="color: red;"></div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Рецензии на видеоигры</p>
+    </footer>
+    <script>
+        document.querySelector("form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+            var formData = new FormData(this);
+    
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+                    if (response.error) {
+                        // Если есть сообщение об ошибке, выводим его на странице
+                        document.getElementById("error-message").innerText = response.error;
+                    } else {
+                        // Перенаправляем на главную страницу при успешной регистрации
+                        window.location.href = "home.html";
+                    }
+                }
+            };
+            xhttp.open("POST", "register.php", true);
+            xhttp.send(formData);
+        });
+    </script>
+    
+</body>
+</html>

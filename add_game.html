@@ -1,0 +1,86 @@
+<?php
+session_start();
+
+// Проверяем, авторизован ли пользователь и является ли он администратором
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
+    // Если пользователь не авторизован или не является администратором, перенаправляем на главную страницу
+    header("Location: home.html");
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить новую игру</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Добавить новую игру</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Главная</a></li>
+                <li><a href="games.html">Игры</a></li>
+                <li><a href="about.html">О нас</a></li> 
+                <li><a href="contact.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="add-game">
+            <h2>Новая игра</h2>
+            <form id="add-game-form">
+                <label for="title">Название:</label>
+                <input type="text" id="title" name="title" required><br>
+                <label for="genre">Жанр:</label>
+                <input type="text" id="genre" name="genre" required><br>
+                <label for="developer">Разработчик:</label>
+                <input type="text" id="developer" name="developer" required><br>
+                <label for="platforms">Платформы (через запятую):</label>
+                <input type="text" id="platforms" name="platforms" required><br>
+                <label for="release_date">Дата выпуска:</label>
+                <input type="date" id="release_date" name="release_date" required><br>
+                <label for="image">Изображение:</label>
+                <input type="file" id="image" name="image" accept="image/*" required><br>
+                <input type="submit" value="Добавить игру">
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Рецензии на видеоигры</p>
+    </footer>
+
+    <script>
+        // Обработчик отправки формы
+        document.getElementById("add-game-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+            // Создаем объект FormData для сбора данных из формы
+            var formData = new FormData(this);
+            // Выполняем AJAX запрос к add_game.php для добавления новой игры
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert(this.responseText); // Отображаем сообщение об успешном добавлении игры
+                    // Перезагружаем страницу, чтобы обновить список игр
+                    location.reload();
+                }
+            };
+            xhttp.open("POST", "add_game.php", true);
+            xhttp.send(formData); // Отправляем данные формы на сервер
+        });
+        xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        alert(this.responseText); // Отображаем сообщение об успешном добавлении игры
+        if (this.responseText.includes("успешно добавлена")) {
+            // Перезагружаем страницу, чтобы обновить список игр
+            window.location.href = "games.html";
+        }
+    }
+};
+
+    </script>
+</body>
+</html>
